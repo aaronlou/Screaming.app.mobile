@@ -10,7 +10,7 @@ import { StatTile } from '../components/StatTile';
 import { Waveform } from '../components/Waveform';
 import { useI18n } from '../i18n';
 import { useAppStore } from '../store/AppStore';
-import { color, spacing, tabularNums, type } from '../theme/tokens';
+import { color, spacing, tabularNums, type, withAlpha } from '../theme/tokens';
 import { formatDurationShort } from '../audio/level';
 import { formatDayLabel, formatTimeOfDay } from '../utils/format';
 
@@ -22,7 +22,7 @@ type HomeScreenProps = {
 
 export function HomeScreen({ onStart, onOpenHistory, onOpenSettings }: HomeScreenProps) {
   const { t, languageTag } = useI18n();
-  const { summary } = useAppStore();
+  const { summary, micStartCrashed, clearMicStartCrash } = useAppStore();
 
   const hasHistory = summary.count > 0;
   const last = summary.lastSession;
@@ -49,6 +49,28 @@ export function HomeScreen({ onStart, onOpenHistory, onOpenSettings }: HomeScree
         <Icon name="shield" size={16} color={color.textFaint} />
         <Text style={styles.privacyText}>{t('home.privacy')}</Text>
       </View>
+
+      {/*
+        Crash recovery. A native abort while starting the microphone cannot be
+        caught in JavaScript, so instead of hiding it we tell the user what
+        happened on the next launch — a silent crash-loop is the worst possible
+        failure mode.
+      */}
+      {micStartCrashed ? (
+        <Card style={styles.crashCard}>
+          <View style={styles.crashHeader}>
+            <Icon name="alert" size={18} color={color.danger} />
+            <Text style={styles.crashTitle}>{t('home.micCrash.title')}</Text>
+          </View>
+          <Text style={styles.crashBody}>{t('home.micCrash.body')}</Text>
+          <AppButton
+            label={t('home.micCrash.dismiss')}
+            variant="secondary"
+            size="md"
+            onPress={clearMicStartCrash}
+          />
+        </Card>
+      ) : null}
 
       {hasHistory ? (
         <>
@@ -148,6 +170,25 @@ const styles = StyleSheet.create({
   },
   statsCard: {
     marginBottom: spacing.lg,
+  },
+  crashCard: {
+    marginBottom: spacing.xxl,
+    gap: spacing.sm,
+    borderColor: withAlpha(color.danger, 0.35),
+  },
+  crashHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  crashTitle: {
+    ...type.label,
+    color: color.text,
+    flex: 1,
+  },
+  crashBody: {
+    ...type.caption,
+    color: color.textMuted,
   },
   statsRow: {
     flexDirection: 'row',

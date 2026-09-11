@@ -39,6 +39,9 @@ export const zhMessages: Messages = {
   'home.history': '历史',
   'home.settings': '设置',
   'home.privacy': '音频不会被保存或上传，只有响度曲线留在你的设备上。',
+  'home.micCrash.title': '麦克风没有启动',
+  'home.micCrash.body': '上次启动麦克风时，应用意外退出了。请确认麦克风工作正常、且没有被其他应用占用，然后再试一次。',
+  'home.micCrash.dismiss': '知道了',
 
   // -- 安全提示 -------------------------------------------------------------
   'safety.title': '喊之前，先看一眼',

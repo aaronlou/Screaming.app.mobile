@@ -109,6 +109,31 @@ jitters on every tick.
 Hierarchy comes from size, spacing and weight, not colour alone. `textTransform:
 uppercase` is reserved for short eyebrows where the letter-spacing can breathe.
 
+### Do not reach for `adjustsFontSizeToFit`
+
+It looks like free insurance against long translations and large Dynamic Type.
+On iOS it is a trap, and it cost us a real bug.
+
+When the `Text` sits content-sized inside a centred container — a button's
+centred row, a segmented control's centred segment — iOS resolves the fit logic
+against a zero width during the very first layout pass and collapses the label
+to `minimumFontScale`. It never recovers, because nothing invalidates it.
+
+Worse, it is a *first-pass race*, so it hits only whichever instance renders
+first. In the settings screen the language picker's labels came out at a third
+of their correct size while the two identical controls below it were perfectly
+fine — which reads as a data problem, not a layout one, and sent us looking in
+the wrong place first.
+
+Giving the `Text` a definite width (`alignSelf: 'stretch'`, `flexShrink: 1`) is
+the intuitive fix and **did not work**. Removing the prop did. Labels now
+truncate with an ellipsis at extreme text sizes, which is what the platform's own
+controls do.
+
+`StatTile` is the one place it is still used, and it is safe there: its label
+sits in a stretching column, so it genuinely does receive a width. If you add a
+new one, put it in a stretching parent or don't use it at all.
+
 ---
 
 ## Spacing, radius, touch

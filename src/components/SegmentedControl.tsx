@@ -51,8 +51,6 @@ export function SegmentedControl<T extends string>({
             <Text
               style={[styles.label, selected ? styles.labelSelected : null]}
               numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
             >
               {option.label}
             </Text>
@@ -87,6 +85,17 @@ const styles = StyleSheet.create({
   label: {
     ...type.label,
     color: color.textMuted,
+    // `alignSelf: stretch` gives the label the segment's full width rather than
+    // leaving it content-sized between the segment's centred children.
+    //
+    // Deliberately no `adjustsFontSizeToFit`: on iOS it resolved against a zero
+    // width during the first layout pass and permanently shrank the labels of
+    // whichever segmented control rendered first — in practice the language
+    // picker, whose labels appeared at roughly a third of the correct size
+    // while the two controls below it were fine. Removing it fixes that; long
+    // labels now truncate instead of shrinking.
+    alignSelf: 'stretch',
+    textAlign: 'center',
   },
   labelSelected: {
     color: color.text,

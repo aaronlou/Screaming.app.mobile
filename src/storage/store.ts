@@ -19,9 +19,60 @@ import { emptySummary, type HistorySummary } from '../types';
 
 const HISTORY_KEY = 'screaming.history.v1';
 const SETTINGS_KEY = 'screaming.settings.v1';
+const MIC_START_KEY = 'screaming.micstart.v1';
 
 /** Keep the stored history bounded; the UI only ever shows recent items. */
 export const MAX_STORED_SESSIONS = 200;
+
+// ---------------------------------------------------------------------------
+// Microphone start sentinel
+// ---------------------------------------------------------------------------
+
+/**
+ * A crash sentinel for microphone start-up.
+ *
+ * `AudioStream.start()` can abort the whole process — notably when the device
+ * has no audio input at all, where `AVAudioNode.installTapOnBus:` raises an
+ * Objective-C exception that JavaScript cannot catch. See the long note in
+ * `src/audio/useScreamSession.ts`.
+ *
+ * A native abort cannot be prevented from JS, but it *can* be noticed. We write
+ * a marker immediately before starting the microphone and clear it the moment
+ * the start succeeds. If the marker is still there on next launch, the app died
+ * during start-up and we can tell the user something useful instead of letting
+ * them hit the same wall blindly.
+ *
+ * The window is deliberately tiny — two awaits around one native call — so a
+ * false positive needs the process to die in that exact gap (a user force-quit,
+ * say). The UI copy is worded to stay true in that case too.
+ */
+export async function setMicStartPending(pending: boolean): Promise<void> {
+  try {
+    if (pending) {
+      await AsyncStorage.setItem(MIC_START_KEY, 'pending');
+    } else {
+      await AsyncStorage.removeItem(MIC_START_KEY);
+    }
+  } catch {
+    // If we cannot write the sentinel we simply lose crash detection for this
+    // run; that is not worth failing a session over.
+  }
+}
+
+/**
+ * Read and clear the sentinel. Returns true when the previous run died while
+ * starting the microphone.
+ */
+export async function consumeMicStartPending(): Promise<boolean> {
+  try {
+    const value = await AsyncStorage.getItem(MIC_START_KEY);
+    if (value !== 'pending') return false;
+    await AsyncStorage.removeItem(MIC_START_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Settings

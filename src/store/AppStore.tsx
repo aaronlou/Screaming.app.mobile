@@ -10,6 +10,7 @@ import React, {
 
 import {
   clearHistory,
+  consumeMicStartPending,
   DEFAULT_SETTINGS,
   loadHistory,
   loadSettings,
@@ -31,6 +32,12 @@ type AppStoreValue = {
   addSession: (session: ScreamSession) => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
   clearAll: () => Promise<void>;
+  /**
+   * True when the previous run died while starting the microphone.
+   * Set once on hydration and cleared by the user dismissing the notice.
+   */
+  micStartCrashed: boolean;
+  clearMicStartCrash: () => void;
 };
 
 const AppStoreContext = createContext<AppStoreValue | null>(null);
@@ -46,6 +53,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [history, setHistory] = useState<ScreamSession[]>([]);
+  const [micStartCrashed, setMicStartCrashed] = useState(false);
 
   /**
    * Mirror of `history` for callbacks that must not depend on it.
@@ -69,15 +77,17 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     (async () => {
-      const [storedSettings, storedHistory] = await Promise.all([
+      const [storedSettings, storedHistory, crashed] = await Promise.all([
         loadSettings(),
         loadHistory(),
+        consumeMicStartPending(),
       ]);
       if (cancelled) return;
       historyRef.current = storedHistory;
       settingsRef.current = storedSettings;
       setSettings(storedSettings);
       setHistory(storedHistory);
+      setMicStartCrashed(crashed);
       setHydrated(true);
     })();
 
@@ -115,6 +125,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     await clearHistory();
   }, []);
 
+  const clearMicStartCrash = useCallback(() => setMicStartCrashed(false), []);
+
   const summary = useMemo(() => summarize(history), [history]);
 
   const value = useMemo<AppStoreValue>(
@@ -127,8 +139,21 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       addSession,
       deleteSession,
       clearAll,
+      micStartCrashed,
+      clearMicStartCrash,
     }),
-    [hydrated, settings, updateSettings, history, summary, addSession, deleteSession, clearAll],
+    [
+      hydrated,
+      settings,
+      updateSettings,
+      history,
+      summary,
+      addSession,
+      deleteSession,
+      clearAll,
+      micStartCrashed,
+      clearMicStartCrash,
+    ],
   );
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;

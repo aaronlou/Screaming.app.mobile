@@ -112,12 +112,8 @@ export function AppButton({
         ) : null}
 
         <Text
-          style={[labelStyle, { color: labelColor }]}
+          style={[labelStyle, styles.label, { color: labelColor }]}
           numberOfLines={1}
-          // Long labels (German, Chinese at large Dynamic Type) should shrink
-          // rather than truncate.
-          adjustsFontSizeToFit
-          minimumFontScale={0.75}
         >
           {label}
         </Text>
@@ -185,5 +181,22 @@ const styles = StyleSheet.create({
   icon: {
     // Nudges the optical centre; icons read slightly high next to text.
     marginTop: 1,
+  },
+  /**
+   * `flexShrink: 1` lets a long label shrink its box rather than overflow the
+   * pill.
+   *
+   * Note the absence of `adjustsFontSizeToFit`. It was here, and it was a bug:
+   * inside this centred row the Text stays content-sized, so on iOS the fit
+   * logic resolves against a zero width on the very first layout pass and
+   * collapses the label to `minimumFontScale` permanently. Confirmed on an
+   * iPhone 16 Pro simulator — an "md" button rendered its label at roughly a
+   * third of the intended size while the "lg" button next to it was fine.
+   * Labels now truncate with an ellipsis at extreme Dynamic Type instead of
+   * shrinking, which is what the platform's own controls do.
+   */
+  label: {
+    flexShrink: 1,
+    textAlign: 'center',
   },
 });

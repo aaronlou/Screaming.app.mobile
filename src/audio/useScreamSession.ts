@@ -24,6 +24,7 @@ import {
   type SensitivityLevel,
 } from './level';
 import { computeScore } from '../stats/score';
+import { setMicStartPending } from '../storage/store';
 import type { ScreamMetrics } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -525,9 +526,15 @@ export function useScreamSession({
         // only on the *recorder*, after preparation, so there is no way to
         // pre-flight the check for a stream from JavaScript today. Revisit if
         // expo-audio adds input enumeration to `AudioModule`.
+        // Sentinel: if the process dies inside `start()`, this marker survives
+        // and the next launch can explain what happened. Awaited, because it
+        // has to reach disk before the native call that might abort.
+        await setMicStartPending(true);
         await streamRef.current?.start();
+        await setMicStartPending(false);
       } catch {
         streamStartedRef.current = false;
+        await setMicStartPending(false);
         if (!mountedRef.current) return;
         setError('microphone');
         setPhase('error');

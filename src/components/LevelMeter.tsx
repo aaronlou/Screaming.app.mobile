@@ -113,7 +113,12 @@ export function LevelMeter({
       </Svg>
 
       <View style={styles.center} pointerEvents="none">
-        <Text style={[styles.value, tabularNums]} numberOfLines={1} adjustsFontSizeToFit>
+        {/*
+          No `adjustsFontSizeToFit` here, deliberately. The centre value is a
+          short timer, and the fit logic misbehaves inside this centred,
+          content-sized column — see the note in `AppButton`.
+        */}
+        <Text style={[styles.value, tabularNums]} numberOfLines={1}>
           {centerValue}
         </Text>
         <Text style={styles.caption} numberOfLines={1}>

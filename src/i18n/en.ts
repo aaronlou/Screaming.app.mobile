@@ -38,6 +38,9 @@ export const en = {
   'home.history': 'History',
   'home.settings': 'Settings',
   'home.privacy': 'Audio is never saved or uploaded. Only the loudness curve stays on your device.',
+  'home.micCrash.title': 'The microphone did not start',
+  'home.micCrash.body': 'Last time, the app closed unexpectedly while starting the microphone. Check that your microphone is working and not in use by another app, then try again.',
+  'home.micCrash.dismiss': 'Got it',
 
   // -- Safety gate ----------------------------------------------------------
   'safety.title': 'Before you scream',

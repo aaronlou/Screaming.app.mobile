@@ -248,9 +248,12 @@ What has actually been checked, as opposed to written:
 | Runtime console | ✅ 0 errors, checked on every screen including live |
 | Live gauge accessibility | ✅ `progressbar` role with a spoken label |
 | Reduced-motion support | ✅ verified in-browser, with a motion-on control run |
-| **Runs on the iOS simulator** | ✅ Expo Go 57.0.9 on iPhone 16 Pro (iOS 18.5) — home and settings screens confirmed natively |
+| **Runs on the iOS simulator** | ✅ Expo Go 57.0.9 on iPhone 16 Pro (iOS 18.5) — home, settings and results screens confirmed natively |
+| Thermal ramp reaches full heat | ✅ score 94 rendered gold natively, confirming the SPL range fix |
+| Microphone crash recovery | ✅ crash triggered for real, sentinel confirmed on disk, notice shown on relaunch |
+| Native label sizing | ✅ regression found on device and fixed, re-verified natively |
 | **Native microphone capture** | ❌ **not verified — blocked by hardware**; see below |
-| Session screen on a Mac without audio input | ❌ **hard-crashes**; see below |
+| Session screen on a Mac without audio input | ⚠️ still aborts (unavoidable from JS) but now recovers with an explanation |
 | Physical device / tablet / landscape | ❌ not verified |
 | Maximum Dynamic Type (font scaling) | ❌ not verified |
 
@@ -281,8 +284,19 @@ Two independent environment limits, both outside the code:
    This cannot occur on real iPhone or iPad hardware, which always has a
    built-in microphone. It is a simulator/hardware-failure case. `expo-audio`
    exposes `getAvailableInputs()` only on the *recorder*, after preparation, so
-   there is no way to pre-flight this from JavaScript today — see the note in
-   `src/audio/useScreamSession.ts`.
+   there is no way to pre-flight this from JavaScript today — and preparing a
+   recorder would create exactly the audio file this app promises never to
+   create, so that workaround was rejected on privacy grounds.
+
+   **What the app does about it instead:** a native abort cannot be prevented
+   from JS, but it can be *noticed*. `useScreamSession` writes a small sentinel
+   to storage immediately before starting the microphone and clears it the
+   instant the start succeeds. If the sentinel is still present on the next
+   launch, the home screen explains that the microphone failed to start and
+   suggests checking it, rather than letting the user walk into the same wall
+   blindly. This was verified end to end on the simulator: the crash was
+   triggered for real, the sentinel was confirmed on disk
+   (`screaming.micstart.v1 = pending`), and the next launch showed the notice.
 
 **Next step to close this out:** run `npm run ios` on a Mac with a working
 microphone, or on a physical device, walk the flow, and compare the reported
@@ -313,6 +327,22 @@ errors" from a different screen, which was true and misleading in equal measure.
 A fifth, tooling-shaped bug: `npm run verify` was documented but did not work on
 a clean checkout. `tsx` was resolving from an unrelated project that happened to
 sit on this machine's `PATH`. It is now a declared devDependency.
+
+And a sixth, which only a real device could have surfaced:
+
+6. **iOS silently shrank button and segmented-control labels.** `AppButton` and
+   `SegmentedControl` both used `adjustsFontSizeToFit` on a `Text` that sits
+   content-sized inside a centred container. On iOS the fit logic resolves
+   against a zero width during the very first layout pass and collapses the
+   label to `minimumFontScale` — permanently. Because it is a first-pass race
+   it hit *only whichever segmented control rendered first* (the language
+   picker, whose labels came out at roughly a third of the correct size) while
+   the two identical controls below it were fine, which made it look like a
+   data problem rather than a layout one. Adding a definite width did not fix
+   it; removing `adjustsFontSizeToFit` did. Labels now truncate at extreme
+   Dynamic Type instead of shrinking, matching what the platform's own controls
+   do. `StatTile` still uses the feature safely — its label sits in a stretching
+   column, so it does get a real width.
 
 The highest-value next check is a real device run to confirm `useAudioStream`
 delivers PCM on iOS and Android, and to calibrate `SPL_OFFSET_DB`.
@@ -361,10 +391,6 @@ figures are presented as estimates with their assumptions stated.
 - `scripts/verify-models.ts` is a hand-rolled assertion script, not a test
   runner. It covers the pure modules well; there is nothing yet for the React
   layer. Moving it to Vitest is the obvious next step.
-- **Suspected, unconfirmed:** in the native settings screenshot the language
-  segmented control's labels render noticeably smaller than the identical
-  controls below them, which points at `adjustsFontSizeToFit` shrinking
-  prematurely on iOS during the first layout pass. It did not reproduce in the
-  browser. Worth a look with a real device and a layout inspector before
-  changing anything — the fix is not obvious and a guess could regress the long
-  labels that the shrink exists to protect.
+- **Suspected, unconfirmed:** ~~in the native settings screenshot the language
+  segmented control's labels render noticeably smaller...~~ **Resolved** — it
+  was `adjustsFontSizeToFit`, not a data problem. See bug 6 above.
