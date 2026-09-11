@@ -1,0 +1,157 @@
+import type { Messages } from './en';
+
+/**
+ * Simplified Chinese copy.
+ *
+ * Typed as `Messages`, so the compiler rejects this file if any key from the
+ * English catalogue is missing.
+ *
+ * This is a localisation, not a literal translation — the tone aims for the same
+ * warm, direct, slightly playful register as the English.
+ */
+export const zhMessages: Messages = {
+  'app.name': '呐喊',
+  'app.tagline': '喊出来。',
+
+  // -- 通用 -----------------------------------------------------------------
+  'common.cancel': '取消',
+  'common.done': '完成',
+  'common.back': '返回',
+  'common.close': '关闭',
+  'common.continue': '继续',
+  'common.retry': '再试一次',
+  'common.today': '今天',
+  'common.yesterday': '昨天',
+  'common.secondsShort': '秒',
+  'common.litersShort': '升',
+
+  // -- 首页 -----------------------------------------------------------------
+  'home.greeting': '准备好喊出来了吗？',
+  'home.subtitle': '用尽全力喊出来。每一分贝都会被记录，但声音本身从不留存。',
+  'home.cta': '开始呐喊',
+  'home.stat.sessions': '呐喊次数',
+  'home.stat.best': '最高分',
+  'home.stat.totalTime': '总时长',
+  'home.stat.avgScore': '平均分',
+  'home.recent': '最近记录',
+  'home.empty.title': '还没有记录',
+  'home.empty.body': '你的第一次呐喊正在等你。找个没人的地方，喊出来。',
+  'home.history': '历史',
+  'home.settings': '设置',
+  'home.privacy': '音频不会被保存或上传，只有响度曲线留在你的设备上。',
+
+  // -- 安全提示 -------------------------------------------------------------
+  'safety.title': '喊之前，先看一眼',
+  'safety.subtitle': '真正的呐喊很响。花十秒钟，确认它不会砸到别人身上。',
+  'safety.check.people.title': '看看四周',
+  'safety.check.people.body': '附近有人吗？突然的喊叫会吓到别人、吵醒婴儿，甚至惊到开车的司机。',
+  'safety.check.place.title': '找个没人的地方',
+  'safety.check.place.body': '停着的车里、楼梯间、洗手间，或者一片空地上，都很好。',
+  'safety.check.body.title': '照顾好自己的身体',
+  'safety.check.body.body': '呐喊会拉扯喉咙和声带。疼了就停下来。',
+  'safety.ack': '我在安全的地方',
+  'safety.tip': '小提示：把脸埋进枕头里喊，声音会被闷住，而且说实话，感觉更爽。',
+  'safety.legal': '本应用不是医疗器械。如果你正处于危机中，请联系当地的心理援助热线。',
+
+  // -- 倒计时 ---------------------------------------------------------------
+  'countdown.title': '准备好',
+  'countdown.breathe': '深深吸一口气……',
+  'countdown.release': '就是现在。全部喊出来。',
+
+  // -- 呐喊中 ---------------------------------------------------------------
+  'live.status.quiet': '比耳语还轻',
+  'live.status.talking': '这只是在说话，不是呐喊',
+  'live.status.loud': '有点意思了',
+  'live.status.screaming': '这才叫呐喊',
+  'live.prompt.quiet': '再大声点',
+  'live.prompt.talking': '继续',
+  'live.prompt.loud': '再深一点',
+  'live.prompt.screaming': '别停',
+  'live.time': '时长',
+  'live.peak': '峰值',
+  'live.average': '平均',
+  'live.screamedFor': '已呐喊',
+  'live.stop': '结束',
+  'live.stopHint': '点击任意位置结束',
+  'live.meter.a11y': '当前响度 {{percent}}%，已用时 {{seconds}} 秒。{{status}}。',
+  'live.permission.title': '需要麦克风权限',
+  'live.permission.body': '呐喊需要测量你有多响。没有麦克风，就没有东西可测。',
+  'live.permission.button': '允许使用麦克风',
+  'live.permission.denied': '麦克风权限已关闭。请到系统设置中开启后继续。',
+  'live.permission.openSettings': '打开设置',
+  'live.error': '麦克风没有响应了。再来一次吧。',
+
+  // -- 结果 -----------------------------------------------------------------
+  'result.title': '干得漂亮。',
+  'result.subtitle': '你把它喊出来了。看看它长什么样。',
+  'result.score': '呐喊得分',
+  'result.peakDb': '峰值',
+  'result.avgDb': '平均',
+  'result.screamTime': '呐喊时长',
+  'result.sessionTime': '本次总时长',
+  'result.distribution.title': '你的位置',
+  'result.distribution.subtitle': '与目前记录到的所有呐喊相比。',
+  'result.distribution.you': '你',
+  'result.distribution.quieter': '更轻',
+  'result.distribution.louder': '更响',
+  'result.distribution.percentile': '比 {{percent}}% 的人喊得更响',
+  'result.distribution.median': '大多数人在 {{score}} 左右',
+  'result.distribution.estimateNote': '排名目前基于模拟基线，尚未接入真实用户数据。',
+  'result.air.title': '呼出的浊气',
+  'result.air.value': '{{liters}} 升',
+  'result.air.body': '一次用力的呐喊，每秒会呼出大约两到四升空气。那种沉重感，就这样离开了你的胸口。',
+  'result.air.equivalent': '大约相当于 {{balloons}} 个气球。',
+  'result.waveform': '你的呐喊',
+  'result.again': '再来一次',
+  'result.share': '分享',
+  'result.shareMessage': '我在「呐喊」里拿了 {{score}} 分，比 {{percent}}% 的人更响，峰值 {{peak}} 分贝。',
+  'result.home': '完成',
+  'result.tier.1': '耳语',
+  'result.tier.2': '低语',
+  'result.tier.3': '大喊',
+  'result.tier.4': '咆哮',
+  'result.tier.5': '呐喊',
+  'result.tier.6': '震天动地',
+
+  // -- 历史 -----------------------------------------------------------------
+  'history.title': '历史',
+  'history.empty.title': '还没有记录',
+  'history.empty.body': '你的呐喊会出现在这里，最新的在最前面。',
+  'history.summary': '共 {{count}} 次 · 累计 {{time}}',
+  'history.peakOf': '峰值 {{peak}} 分贝',
+  'history.delete': '删除',
+  'history.clearAll': '清空全部历史',
+  'history.clearConfirm.title': '清空全部历史？',
+  'history.clearConfirm.body': '这台设备上记录的所有呐喊都会被删除，且无法恢复。',
+
+  // -- 设置 -----------------------------------------------------------------
+  'settings.title': '设置',
+  'settings.section.language': '语言',
+  'settings.language.system': '自动',
+  'settings.language.systemHint': '跟随系统语言',
+  'settings.language.en': 'English',
+  'settings.language.zh': '中文',
+  'settings.section.audio': '声音',
+  'settings.units': '响度单位',
+  'settings.units.db': '分贝（dB）',
+  'settings.units.percent': '最大值的百分比',
+  'settings.haptics': '触感反馈',
+  'settings.haptics.hint': '跟随呐喊强度震动',
+  'settings.sensitivity': '麦克风灵敏度',
+  'settings.sensitivity.low': '低',
+  'settings.sensitivity.normal': '标准',
+  'settings.sensitivity.high': '高',
+  'settings.sensitivity.hint': '如果你的呐喊总是到不了顶，就把它调高。',
+  'settings.section.data': '你的数据',
+  'settings.section.about': '关于',
+  'settings.disclaimer.title': '不构成医疗建议',
+  'settings.disclaimer.body': '呐喊是一个泄压阀，不是治疗手段，也不能替代专业人士的帮助。如果你正承受痛苦，请联系当地的心理援助热线。',
+  'settings.privacy.title': '隐私',
+  'settings.privacy.body': '「呐喊」只记录响度数值。音频不会被写入磁盘、不会上传，也永远不会离开你的麦克风。所有测量数据都留在这台设备上。',
+  'settings.version': '版本',
+  'settings.about': '关于',
+
+  // -- 错误 -----------------------------------------------------------------
+  'error.title': '出了点问题',
+  'error.storage': '无法读取已保存的呐喊记录。',
+};
