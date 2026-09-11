@@ -248,8 +248,9 @@ What has actually been checked, as opposed to written:
 | Runtime console | ✅ 0 errors, checked on every screen including live |
 | Live gauge accessibility | ✅ `progressbar` role with a spoken label |
 | Reduced-motion support | ✅ verified in-browser, with a motion-on control run |
-| **Runs on the iOS simulator** | ✅ Expo Go 57.0.9 on iPhone 16 Pro (iOS 18.5) — home, settings and results screens confirmed natively |
+| **Runs on the iOS simulator** | ✅ Expo Go 57.0.9 on iPhone 16 Pro (iOS 18.5) — **home, safety, history, settings and results** all confirmed natively |
 | Thermal ramp reaches full heat | ✅ score 94 rendered gold natively, confirming the SPL range fix |
+| Thermal ramp varies per session | ✅ history rows tint differently by peak level |
 | Microphone crash recovery | ✅ crash triggered for real, sentinel confirmed on disk, notice shown on relaunch |
 | Native label sizing | ✅ regression found on device and fixed, re-verified natively |
 | **Native microphone capture** | ❌ **not verified — blocked by hardware**; see below |
